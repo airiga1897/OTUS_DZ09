@@ -69,12 +69,17 @@ class Lab:
         if not path.is_file():
             raise RuntimeError("Заполните config/lab.local.json по примеру.")
         settings = read(path)
-        domain = settings["portal_name"].lower().rstrip(".")
+        if not isinstance(settings, dict):
+            raise ValueError("config/lab.local.json должен содержать объект JSON.")
+        name = settings.get("portal_name", "portal.dz09.test")
+        if not isinstance(name, str):
+            raise ValueError("Поле portal_name в config/lab.local.json должно быть строкой.")
+        domain = name.lower().rstrip(".")
         if len(domain) > 253 or len(domain.split(".")) < 3 or not all(
             re.fullmatch(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?", label)
             for label in domain.split(".")
         ) or domain == "portal.service.consul" or domain.endswith(".consul"):
-            raise ValueError("portal_name должен быть отдельным DNS-именем в домене оператора.")
+            raise ValueError("Укажите в portal_name имя для частной зоны BIND, например portal.dz09.test.")
         return domain, admin_access(settings.get("admin_cidrs", []))
 
     def prepare_context(self, cloud, domain):
