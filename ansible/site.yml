@@ -1,0 +1,288 @@
+---
+- name: Prepare the controller and database
+  hosts: controller
+  become: true
+  tasks:
+    - name: Install controller packages
+      ansible.builtin.apt:
+        name: [mariadb-server, nginx, bind9, bind9-dnsutils, curl]
+        update_cache: true
+        cache_valid_time: 1800
+        lock_timeout: 120
+
+    - name: Download the pinned Consul archive
+      ansible.builtin.get_url:
+        url: "https://mirror.yandex.ru/mirrors/releases.hashicorp.com/consul/{{ consul_version }}/consul_{{ consul_version }}_linux_amd64.zip"
+        checksum: "sha256:{{ consul_checksum }}"
+        dest: "{{ playbook_dir }}/../consul.zip"
+        mode: '0644'
+
+    - name: Bind MariaDB to the private address
+      ansible.builtin.copy:
+        content: |
+          [mysqld]
+          bind-address = {{ lab_nodes.client.private }}
+        dest: /etc/mysql/mariadb.conf.d/60-otus-dz09.cnf
+        mode: '0644'
+      register: database_config
+
+    - name: Start MariaDB
+      ansible.builtin.systemd_service:
+        name: mariadb
+        enabled: true
+        state: "{{ 'restarted' if database_config.changed else 'started' }}"
+
+    - name: Ensure the portal database and three host-specific grants
+      ansible.builtin.command:
+        argv: [mariadb]
+        stdin: |
+          CREATE DATABASE IF NOT EXISTS otus CHARACTER SET utf8mb4;
+          {% for name in groups.web %}
+          CREATE USER IF NOT EXISTS 'otus'@'{{ lab_nodes[name].private }}' IDENTIFIED BY '{{ wordpress_db }}';
+          ALTER USER 'otus'@'{{ lab_nodes[name].private }}' IDENTIFIED BY '{{ wordpress_db }}';
+          GRANT ALL ON otus.* TO 'otus'@'{{ lab_nodes[name].private }}';
+          {% endfor %}
+      no_log: true
+
+- name: Configure one Consul agent and a TLS endpoint per VM
+  hosts: all
+  become: true
+  tasks:
+    - name: Wait for first-boot setup
+      ansible.builtin.command: cloud-init status --wait
+      changed_when: false
+
+    - name: Install shared dependencies
+      ansible.builtin.apt:
+        name: [unzip, nginx]
+        update_cache: true
+        cache_valid_time: 1800
+        lock_timeout: 120
+
+    - name: Create Consul system user
+      ansible.builtin.user:
+        name: consul
+        system: true
+        create_home: false
+        shell: /usr/sbin/nologin
+
+    - name: Create Consul directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: consul
+        group: consul
+        mode: '0750'
+      loop: [/etc/consul.d, /var/lib/consul]
+
+    - name: Read installed Consul version
+      ansible.builtin.command: consul version
+      register: installed_consul
+      changed_when: false
+      failed_when: false
+
+    - name: Install the pinned Consul binary
+      ansible.builtin.unarchive:
+        src: "{{ playbook_dir }}/../consul.zip"
+        dest: /usr/local/bin
+        include: [consul]
+        owner: root
+        group: root
+        mode: '0755'
+      when: installed_consul.rc != 0 or ('Consul v' ~ consul_version ~ '\n') not in installed_consul.stdout
+      notify: Restart Consul
+
+    - name: Render Consul agent configuration
+      ansible.builtin.template:
+        src: consul.json.j2
+        dest: /etc/consul.d/agent.json
+        owner: consul
+        group: consul
+        mode: '0640'
+      no_log: true
+      notify: Restart Consul
+
+    - name: Register the local portal on the web VM
+      ansible.builtin.template:
+        src: portal.json.j2
+        dest: /etc/consul.d/portal.json
+        owner: consul
+        group: consul
+        mode: '0640'
+      when: inventory_hostname in groups.web
+      notify: Restart Consul
+
+    - name: Validate the complete Consul configuration
+      ansible.builtin.command: /usr/local/bin/consul validate /etc/consul.d
+      changed_when: false
+
+    - name: Install Consul service
+      ansible.builtin.copy:
+        src: consul.service
+        dest: /etc/systemd/system/consul.service
+        mode: '0644'
+      notify: Restart Consul
+
+    - name: Enable Consul
+      ansible.builtin.systemd_service:
+        name: consul
+        daemon_reload: true
+        enabled: true
+        state: started
+
+    - name: Install TLS files
+      ansible.builtin.include_tasks: tls.yml
+
+  handlers:
+    - name: Restart Consul
+      ansible.builtin.systemd_service:
+        name: consul
+        daemon_reload: true
+        state: restarted
+      throttle: 1
+
+- name: Install and initialize the portal
+  hosts: web
+  become: true
+  tasks:
+    - name: Install WordPress packages
+      ansible.builtin.apt:
+        name: [php8.3-fpm, php8.3-cli, php8.3-mysql, php8.3-xml, php8.3-curl, php8.3-mbstring, php8.3-zip]
+        lock_timeout: 120
+
+    - name: Create WordPress and import directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop: [/var/www/otus, /usr/local/lib/otus-dz09]
+
+    - name: Install WP-CLI
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../wp-cli.phar"
+        dest: /usr/local/bin/wp
+        mode: '0755'
+
+    - name: Download WordPress
+      ansible.builtin.command:
+        argv: [/usr/local/bin/wp, --allow-root, --path=/var/www/otus, core, download,
+               "--version={{ wordpress_version }}", --skip-content]
+        creates: /var/www/otus/wp-settings.php
+
+    - name: Verify WordPress checksums
+      ansible.builtin.command:
+        argv: [/usr/local/bin/wp, --allow-root, --path=/var/www/otus, core, verify-checksums,
+               "--version={{ wordpress_version }}"]
+      changed_when: false
+
+    - name: Create the local theme directory
+      ansible.builtin.file:
+        path: /var/www/otus/wp-content/themes/otus
+        state: directory
+        mode: '0755'
+
+    - name: Install portal theme
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../portal/{{ item }}"
+        dest: "/var/www/otus/wp-content/themes/otus/{{ item }}"
+        mode: '0644'
+      loop: [index.php, style.css]
+
+    - name: Configure shared WordPress database
+      ansible.builtin.template:
+        src: wp-config.php.j2
+        dest: /var/www/otus/wp-config.php
+        group: www-data
+        mode: '0640'
+      no_log: true
+
+    - name: Install the local readiness probe
+      ansible.builtin.copy:
+        src: health.php
+        dest: /usr/local/lib/otus-dz09/health.php
+        mode: '0644'
+
+    - name: Check whether WordPress is initialized
+      ansible.builtin.command:
+        argv: [/usr/local/bin/wp, --allow-root, --path=/var/www/otus, core, is-installed]
+      register: wordpress_installed
+      failed_when: wordpress_installed.rc not in [0, 1]
+      changed_when: false
+      when: inventory_hostname == 'web-a'
+
+    - name: Initialize WordPress once in the shared database
+      ansible.builtin.command:
+        argv: [/usr/local/bin/wp, --allow-root, --path=/var/www/otus, core, install,
+               "--url=https://{{ portal_name }}", '--title=Учебные проекты',
+               --admin_user=otus-admin, --admin_email=admin@example.invalid,
+               --skip-email, --prompt=admin_password]
+        stdin: "{{ wordpress_admin }}"
+      when: inventory_hostname == 'web-a' and wordpress_installed.rc == 1
+      no_log: true
+
+    - name: Prepare content import on the first web node
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../portal/{{ item.name }}"
+        dest: "/usr/local/lib/otus-dz09/{{ item.name }}"
+        mode: "{{ item.mode }}"
+      loop:
+        - {name: import-content.py, mode: '0755'}
+        - {name: materials.xml, mode: '0644'}
+      when: inventory_hostname == 'web-a'
+
+    - name: Activate theme, select permalink format and import materials
+      ansible.builtin.command:
+        argv: "{{ item }}"
+      loop:
+        - [/usr/local/bin/wp, --allow-root, --path=/var/www/otus, theme, activate, otus]
+        - [/usr/local/bin/wp, --allow-root, --path=/var/www/otus, rewrite, structure, '/articles/%postname%/']
+        - [/usr/bin/python3, /usr/local/lib/otus-dz09/import-content.py]
+      when: inventory_hostname == 'web-a'
+
+    - name: Enable PHP-FPM
+      ansible.builtin.systemd_service:
+        name: php8.3-fpm
+        enabled: true
+        state: started
+
+    - name: Configure and start the HTTPS web node
+      ansible.builtin.include_tasks: nginx.yml
+      vars:
+        nginx_template: web.conf.j2
+
+- name: Configure private DNS, reverse proxy and verifier
+  hosts: controller
+  become: true
+  tasks:
+    - name: Configure BIND and the synchronizer
+      ansible.builtin.include_tasks: dns.yml
+
+    - name: Configure and start the HTTPS reverse proxy
+      ansible.builtin.include_tasks: nginx.yml
+      vars:
+        nginx_template: proxy.conf.j2
+
+    - name: Install the verification script
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../verify.py"
+        dest: /usr/local/lib/otus-dz09/verify.py
+        mode: '0755'
+
+    - name: Install the restricted deployment SSH key
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../ansible-key"
+        dest: /etc/otus-dz09/ansible-key
+        mode: '0600'
+      no_log: true
+
+    - name: Install enrolled SSH host keys
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'HOME') }}/.otus-dz09/known_hosts"
+        dest: /etc/otus-dz09/known_hosts
+        mode: '0600'
+
+    - name: Write verification inventory
+      ansible.builtin.copy:
+        content: "{{ {'nodes': lab_nodes, 'name': lab_name, 'folder': lab_folder, 'portal': portal_name} | to_nice_json }}"
+        dest: /etc/otus-dz09/verify.json
+        mode: '0600'

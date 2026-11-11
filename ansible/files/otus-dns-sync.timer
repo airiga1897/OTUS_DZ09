@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh private portal DNS
+
+[Timer]
+OnBootSec=5s
+OnUnitInactiveSec=5s
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target

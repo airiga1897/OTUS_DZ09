@@ -1,0 +1,8 @@
+{
+  "portal": {{ portal_name | to_json }},
+  "instances": {
+{% for name in groups.web | sort %}
+    "portal-{{ name[-1] }}": {{ lab_nodes[name].private | to_json }}{{ "," if not loop.last else "" }}
+{% endfor %}
+  }
+}

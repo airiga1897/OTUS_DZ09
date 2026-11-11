@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='utf-8'?>
+<rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/" xmlns:wp="http://wordpress.org/export/1.2/" version="2.0">
+  <channel>
+    <title>OTUS</title>
+    <link>http://localhost:8080</link>
+    <description>Учебные материалы</description>
+    <language>ru-RU</language>
+    <wp:wxr_version>1.2</wp:wxr_version>
+    <wp:base_site_url>http://localhost:8080</wp:base_site_url>
+    <wp:base_blog_url>http://localhost:8080</wp:base_blog_url>
+    <item>
+      <title>Первая инфраструктура в Yandex Cloud</title>
+      <link>http://localhost:8080/articles/terraform-yc/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ01 посвящено созданию виртуальной машины через Terraform.
+Конфигурация инфраструктуры хранится в Git, реальные параметры и state остаются локальными.
+Исходники: https://github.com/airiga1897/OTUS_DZ01</content:encoded>
+      <excerpt:encoded>Terraform, сеть и безопасный SSH-доступ.</excerpt:encoded>
+      <wp:post_id>1</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>terraform-yc</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>1</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Общее хранилище GFS2</title>
+      <link>http://localhost:8080/articles/shared-gfs2/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ02 объединяет iSCSI-хранилище и несколько клиентов GFS2.
+Проверяются общий доступ и перекрёстная запись.
+Исходники: https://github.com/airiga1897/OTUS_DZ02</content:encoded>
+      <excerpt:encoded>iSCSI, multipath и распределённые блокировки.</excerpt:encoded>
+      <wp:post_id>2</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>shared-gfs2</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>2</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Балансировка веб-приложения</title>
+      <link>http://localhost:8080/articles/nginx-balance/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ03 использует Nginx, PHP-FPM и WordPress. Проверены балансировка и отказ веб-службы.
+Исходники: https://github.com/airiga1897/OTUS_DZ03</content:encoded>
+      <excerpt:encoded>Два веб-узла, общая БД и проверки переключения.</excerpt:encoded>
+      <wp:post_id>3</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>nginx-balance</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>3</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Отказоустойчивое приложение</title>
+      <link>http://localhost:8080/articles/high-load/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ04 объединяет инфраструктуру и веб-приложение.
+DRBD dual-primary + GFS2 — учебный эксперимент в неподдерживаемом режиме; результаты отказных испытаний публикуются только после их выполнения.
+Для промышленного применения рекомендуется отказоустойчивое общее блочное хранилище с резервируемыми iSCSI-контроллерами и несколькими путями доступа.
+Исходники: https://github.com/airiga1897/OTUS_DZ04</content:encoded>
+      <excerpt:encoded>Пять ВМ, два фронта и эксперимент DRBD + GFS2.</excerpt:encoded>
+      <wp:post_id>4</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>high-load</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>4</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Кластер MySQL InnoDB Cluster</title>
+      <link>http://localhost:8080/articles/mysql-innodb-cluster/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ05 посвящено отказоустойчивому кластеру MySQL InnoDB Cluster.
+Group Replication поддерживает согласованность узлов, а MySQL Router направляет подключения Django-портала к узлу записи.
+Проверка включает отказ ведущего узла, сохранность данных и восстановление кластера.
+Исходники: https://github.com/airiga1897/OTUS_DZ05</content:encoded>
+      <excerpt:encoded>Три узла MySQL, Group Replication и MySQL Router.</excerpt:encoded>
+      <wp:post_id>5</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>mysql-innodb-cluster</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>5</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Кластер PostgreSQL с Patroni</title>
+      <link>http://localhost:8080/articles/postgresql-patroni/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ06 посвящено кластеру PostgreSQL из трёх узлов под управлением Patroni.
+etcd хранит согласованное состояние кластера, а HAProxy направляет подключения Django-портала к текущему ведущему узлу.
+Проверка включает автоматическую смену лидера при выключении ВМ, сохранность записей и возвращение узла в кластер.
+Исходники: https://github.com/airiga1897/OTUS_DZ06</content:encoded>
+      <excerpt:encoded>PostgreSQL, Patroni, etcd и маршрутизация через HAProxy.</excerpt:encoded>
+      <wp:post_id>6</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>postgresql-patroni</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>6</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Централизованный сбор логов в Elasticsearch</title>
+      <link>http://localhost:8080/articles/elasticsearch-logging/</link>
+      <pubDate>Thu, 01 Jan 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>ДЗ07: четыре ВМ. На app работают HAProxy, Nginx, Django/uWSGI, PostgreSQL и Kibana. Elasticsearch размещён на трёх отдельных ВМ. Filebeat собирает журналы всех служб и системные журналы. Настроены TLS, авторизация, обработка событий, шаблон индексов и визуализация. Проверяются сайт, поступление логов, повторное развёртывание и сохранность данных; тестовый цикл удаляет свой стенд с аудитом ресурсов.</content:encoded>
+      <excerpt:encoded>Централизованный сбор логов служб в трёхузловой Elasticsearch с Kibana.</excerpt:encoded>
+      <wp:post_id>7</wp:post_id>
+      <wp:post_date>2026-01-01 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-01-01 00:00:00</wp:post_date_gmt>
+      <wp:post_name>elasticsearch-logging</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>7</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>Очередь журналов Kafka</title>
+      <link>http://localhost:8080/articles/kafka-log-pipeline/</link>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 +0000</pubDate>
+      <dc:creator>otus-admin</dc:creator>
+      <description />
+      <content:encoded>Filebeat читает журналы Nginx и WordPress и отправляет их в отдельные топики Kafka. Logstash записывает события в два индекса Elasticsearch. В Kibana для каждого источника настроено отдельное представление данных.
+
+Стенд использует две ВМ в Yandex Cloud. Портал работает на одной ВМ, оба брокера Kafka и Elastic Stack — на другой.</content:encoded>
+      <excerpt:encoded>Nginx и WordPress отправляют журналы через Kafka в Elasticsearch.</excerpt:encoded>
+      <wp:post_id>8</wp:post_id>
+      <wp:post_date>2026-11-07 00:00:00</wp:post_date>
+      <wp:post_date_gmt>2026-11-07 00:00:00</wp:post_date_gmt>
+      <wp:post_name>kafka-log-pipeline</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:post_parent>0</wp:post_parent>
+      <wp:is_sticky>0</wp:is_sticky>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>8</wp:meta_value>
+      </wp:postmeta>
+    </item>
+    <item>
+      <title>ДЗ09. Consul и DNS</title>
+      <link>http://localhost:8080/articles/consul-dns/</link>
+      <guid isPermaLink="false">otus-dz09-consul-dns</guid>
+      <description></description>
+      <content:encoded><![CDATA[
+<h3>Цель</h3>
+<p>Настроить Consul для обнаружения экземпляров портала и распределения трафика через DNS.</p>
+<h3>Обязательная часть</h3>
+<p>Развернуть не менее трёх серверных агентов и одного клиента Consul. Зарегистрировать портал из ДЗ08 и настроить DNS так, чтобы имя возвращало адреса работающих экземпляров. Проверить, что адрес отказавшего веб-сервера исчезает из DNS-ответа.</p>
+<h3>Повышенная часть</h3>
+<p>Подключить обновление DNS для доменного имени и автоматизировать проверку всей цепочки. В учебном стенде записи собственного BIND обновляются по данным Consul. Тестовое имя разрешается внутри стенда.</p>
+<h3>Ожидаемая проверка</h3>
+<p>В начале Consul DNS и BIND выдают три адреса. При отказе одного веб-узла остаются два адреса, а портал продолжает отвечать. После восстановления узла его адрес снова появляется в обоих DNS-ответах.</p>
+]]></content:encoded>
+      <excerpt:encoded><![CDATA[Обнаружение веб-реплик и проверка переключения через Consul DNS и BIND.]]></excerpt:encoded>
+      <wp:post_name>consul-dns</wp:post_name>
+      <wp:status>publish</wp:status>
+      <wp:post_type>post</wp:post_type>
+      <wp:postmeta>
+        <wp:meta_key>otus_lesson</wp:meta_key>
+        <wp:meta_value>9</wp:meta_value>
+      </wp:postmeta>
+    </item>
+  </channel>
+</rss>

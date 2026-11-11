@@ -1,0 +1,8 @@
+[Unit]
+Description=Update the private BIND zone from Consul
+After=consul.service named.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/otus-dz09/sync_dns.py
+TimeoutStartSec=15

@@ -1,0 +1,11 @@
+/*
+Theme Name: OTUS Lessons
+Version: 1.0.0
+*/
+body { margin: 0; background: #f3f6fa; color: #162439; font: 1rem/1.55 system-ui, sans-serif; }
+main { max-width: 66rem; margin: auto; padding: 2rem 1rem; }
+a { color: #0c487c; }
+header { margin-bottom: 1.5rem; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr)); gap: 1rem; }
+article { background: white; border: 1px solid #d6deeb; border-radius: .5rem; padding: 1rem; }
+article span { color: #435976; }

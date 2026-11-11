@@ -1,0 +1,29 @@
+server {
+    listen {{ lab_nodes[inventory_hostname].private }}:443 ssl;
+    server_name {{ portal_name }};
+    ssl_certificate /etc/otus-dz09/server.crt;
+    ssl_certificate_key /etc/otus-dz09/server.key;
+    root /var/www/otus;
+    index index.php;
+    add_header X-Backend-Node {{ inventory_hostname }} always;
+
+    location / {
+        try_files $uri $uri/ /index.php?$args;
+    }
+    location = /wp-config.php { return 404; }
+    location ~ \.php$ {
+        try_files $uri =404;
+        include fastcgi.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    }
+}
+
+server {
+    listen 127.0.0.1:8080;
+    location = /healthz {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /usr/local/lib/otus-dz09/health.php;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+    }
+    location / { return 404; }
+}

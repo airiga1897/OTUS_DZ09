@@ -1,0 +1,9 @@
+/.local/
+/.lab/
+/.tools/
+/.venv/
+/.env
+/config/lab.local.json
+**/.terraform/
+*.tfstate*
+__pycache__/

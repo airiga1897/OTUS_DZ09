@@ -1,0 +1,21 @@
+---
+- name: Disable the default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Render the portal Nginx site
+  ansible.builtin.template:
+    src: "{{ nginx_template }}"
+    dest: /etc/nginx/conf.d/otus-dz09.conf
+    mode: '0644'
+
+- name: Validate the Nginx configuration
+  ansible.builtin.command: nginx -t
+  changed_when: false
+
+- name: Enable and reload Nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    enabled: true
+    state: reloaded

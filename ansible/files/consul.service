@@ -1,0 +1,14 @@
+[Unit]
+Description=Consul agent for OTUS DZ09
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=consul
+Group=consul
+ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

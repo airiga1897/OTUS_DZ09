@@ -1,0 +1,14 @@
+{
+  "datacenter": "dc1",
+  "node_name": {{ inventory_hostname | to_json }},
+  "server": {{ (inventory_hostname in groups.web) | to_json }},
+{% if inventory_hostname in groups.web %}
+  "bootstrap_expect": {{ groups.web | length }},
+{% endif %}
+  "bind_addr": {{ lab_nodes[inventory_hostname].private | to_json }},
+  "client_addr": "127.0.0.1",
+  "data_dir": "/var/lib/consul",
+  "encrypt": {{ consul_gossip_key | to_json }},
+  "retry_join": {{ (groups.web | reject('equalto', inventory_hostname) | map('extract', lab_nodes, 'private') | list) | to_json }},
+  "dns_config": {"only_passing": true, "allow_stale": false}
+}
