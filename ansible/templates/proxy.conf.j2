@@ -1,0 +1,52 @@
+server {
+    listen 443 ssl;
+    server_name {{ portal_name }};
+    ssl_certificate /etc/otus-dz09/server.crt;
+    ssl_certificate_key /etc/otus-dz09/server.key;
+    resolver 127.0.0.1 valid=5s ipv6=off;
+    resolver_timeout 3s;
+
+    location / {
+        set $portal {{ portal_name }};
+        proxy_pass https://$portal;
+        proxy_ssl_server_name on;
+        proxy_ssl_name {{ portal_name }};
+        proxy_ssl_trusted_certificate /etc/otus-dz09/ca.crt;
+        proxy_ssl_verify on;
+        proxy_set_header Host {{ portal_name }};
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_connect_timeout 3s;
+        proxy_next_upstream error timeout http_502 http_503 http_504;
+    }
+}
+
+server {
+    listen 80;
+    server_name _;
+    resolver 127.0.0.1 valid=5s ipv6=off;
+    resolver_timeout 3s;
+
+    location ~ ^/(?:articles/[a-z0-9-]+/|wp-content/themes/otus/style\.css)?$ {
+        limit_except GET { deny all; }
+        set $portal {{ portal_name }};
+        # Use the normalized path and omit query parameters.
+        proxy_pass https://$portal$uri;
+        proxy_ssl_server_name on;
+        proxy_ssl_name {{ portal_name }};
+        proxy_ssl_trusted_certificate /etc/otus-dz09/ca.crt;
+        proxy_ssl_verify on;
+        proxy_pass_request_headers off;
+        proxy_pass_request_body off;
+        proxy_set_header Host {{ portal_name }};
+        proxy_set_header Content-Length "";
+        proxy_hide_header Set-Cookie;
+        proxy_ignore_headers X-Accel-Redirect;
+        sub_filter 'https://{{ portal_name }}/' '/';
+        sub_filter_once off;
+        proxy_connect_timeout 3s;
+        proxy_next_upstream error timeout http_502 http_503 http_504;
+    }
+
+    location / { return 404; }
+}

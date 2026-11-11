@@ -1,0 +1,17 @@
+---
+- name: Create configuration directory
+  ansible.builtin.file:
+    path: /etc/otus-dz09
+    state: directory
+    mode: '0755'
+
+- name: Install local CA and VM certificate
+  ansible.builtin.copy:
+    src: "{{ tls_source }}/{{ item.src }}"
+    dest: "/etc/otus-dz09/{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  loop:
+    - {src: ca.crt, dest: ca.crt, mode: '0644'}
+    - {src: "{{ inventory_hostname }}.crt", dest: server.crt, mode: '0644'}
+    - {src: "{{ inventory_hostname }}.key", dest: server.key, mode: '0600'}
+  no_log: true

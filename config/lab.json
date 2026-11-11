@@ -1,0 +1,13 @@
+{
+  "subnet_zones": {"web": "ru-central1-a", "client": "ru-central1-d", "web-d": "ru-central1-d"},
+  "subnets": {"web": "10.42.1.0/24", "client": "10.42.2.0/24", "web-d": "10.42.3.0/24"},
+  "platform": "standard-v3",
+  "image_family": "ubuntu-2404-lts",
+  "disk_type": "network-hdd",
+  "nodes": {
+    "web-a": {"subnet": "web", "host": 11, "cores": 2, "memory": 4, "disk": 10},
+    "web-b": {"subnet": "web", "host": 12, "cores": 2, "memory": 4, "disk": 10},
+    "web-c": {"subnet": "web-d", "host": 13, "cores": 2, "memory": 4, "disk": 20},
+    "client": {"subnet": "client", "host": 10, "cores": 2, "memory": 4, "disk": 20}
+  }
+}

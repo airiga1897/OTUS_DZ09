@@ -1,0 +1,17 @@
+<?php
+define('DB_NAME', 'otus');
+define('DB_USER', 'otus');
+define('DB_PASSWORD', '{{ wordpress_db }}');
+define('DB_HOST', '{{ lab_nodes.client.private }}');
+define('DB_CHARSET', 'utf8mb4');
+define('DB_COLLATE', '');
+{% for key in ['AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY', 'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT'] %}
+define('{{ key }}', '{{ (key + wordpress_admin + wordpress_db) | hash("sha512") }}');
+{% endfor %}
+define('DISALLOW_FILE_MODS', true);
+define('WP_DEBUG', false);
+define('WP_DEFAULT_THEME', 'otus');
+define('WP_HOME', 'https://{{ portal_name }}');
+define('WP_SITEURL', 'https://{{ portal_name }}');
+$table_prefix = 'wp_';
+require_once __DIR__ . '/wp-settings.php';

@@ -1,0 +1,8 @@
+include "/etc/bind/otus-dz09.key";
+
+zone "{{ portal_name }}" {
+    type primary;
+    file "/var/lib/bind/otus-dz09.zone";
+    update-policy { grant otus-dz09. name {{ portal_name }}. A; };
+    notify no;
+};

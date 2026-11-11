@@ -1,0 +1,15 @@
+{
+  "service": {
+    "name": "portal",
+    "id": "portal-{{ inventory_hostname[-1] }}",
+    "address": {{ lab_nodes[inventory_hostname].private | to_json }},
+    "port": 443,
+    "check": {
+      "name": "WordPress and MariaDB readiness",
+      "http": "http://127.0.0.1:8080/healthz",
+      "disable_redirects": true,
+      "interval": "3s",
+      "timeout": "2s"
+    }
+  }
+}

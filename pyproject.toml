@@ -1,0 +1,9 @@
+[project]
+name = "otus-dz09"
+version = "0.1.0"
+description = "WordPress, Consul and BIND on Yandex Cloud"
+requires-python = ">=3.12,<3.15"
+dependencies = []
+
+[tool.poetry]
+package-mode = false
