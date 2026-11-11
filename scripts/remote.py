@@ -125,6 +125,5 @@ class Remote:
         name = self.context["portal_name"]
         print(f"Портал: http://{self.address}/")
         print(f"ДЗ09: http://{self.address}/articles/consul-dns/")
-        print(f"Администрирование: https://{name}/wp-admin/")
         print(f"curl.exe --ssl-revoke-best-effort --noproxy '*' --cacert \"{self.ca}\" "
               f"--resolve {name}:443:{self.address} https://{name}/articles/consul-dns/")
