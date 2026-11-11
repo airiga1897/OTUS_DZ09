@@ -7,7 +7,7 @@ function Get-ToolArchive {
     $curl = Get-Command curl.exe -CommandType Application -ErrorAction SilentlyContinue
     if ($curl) {
         & $curl.Source --fail --location --silent --show-error --retry 2 --max-time 180 --output $Destination $Url
-        if ($LASTEXITCODE) { throw "Cannot download $Name." }
+        if ($LASTEXITCODE) { throw "Cannot download $Name from $Url (curl exit code $LASTEXITCODE)." }
     } else {
         $ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -UseBasicParsing -Uri $Url -OutFile $Destination -TimeoutSec 180
@@ -104,7 +104,7 @@ try {
         $architecture = '386'
         $terraformHash = 'dd530788dff2c132bab59e29c00c81b8d2a9aa4b0c9832addd0777bd07b4b6cf'
     }
-    Install-MissingTool terraform.exe "https://releases.hashicorp.com/terraform/$terraformVersion/terraform_${terraformVersion}_windows_${architecture}.zip" $terraformHash
+    Install-MissingTool terraform.exe "https://hashicorp-releases.yandexcloud.net/terraform/$terraformVersion/terraform_${terraformVersion}_windows_${architecture}.zip" $terraformHash
     Install-MissingTool yc.exe "https://storage.yandexcloud.net/yandexcloud-yc/release/yc_windows_${architecture}.zip" -LocalOnly
 
     $poetryVersion = '2.4.1'
