@@ -49,7 +49,8 @@ git branch --all
 # Если файлы стенда находятся в другой ветке, выберите её.
 # git switch 'ИМЯ_ВЕТКИ'
 .\scripts\setup.ps1
-Copy-Item config/lab.local.example.json config/lab.local.json
+# Если config/lab.local.json ещё не создан, скопируйте файл примера.
+# Copy-Item config/lab.local.example.json config/lab.local.json
 .\.tools\bin\yc.exe --config .tools/yc-config.yaml init
 ```
 
