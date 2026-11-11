@@ -120,10 +120,5 @@ class Remote:
         print("HTTP: главная, статья ДЗ09 и стили доступны по IP. Вход и POST закрыты.", flush=True)
 
     def open(self):
-        if not self.ca.is_file():
-            raise RuntimeError("Сертификат УЦ отсутствует. Завершите deploy.")
-        name = self.context["portal_name"]
         print(f"Портал: http://{self.address}/")
         print(f"ДЗ09: http://{self.address}/articles/consul-dns/")
-        print(f"curl.exe --ssl-revoke-best-effort --noproxy '*' --cacert \"{self.ca}\" "
-              f"--resolve {name}:443:{self.address} https://{name}/articles/consul-dns/")
