@@ -15,7 +15,7 @@ function Get-ToolArchive {
 }
 
 function Install-MissingTool {
-    param([string]$Executable, [string]$Url, [string]$Sha256, [switch]$LocalOnly)
+    param([string]$Executable, [string[]]$Url, [string]$Sha256, [switch]$LocalOnly)
 
     $destination = Join-Path $PWD ".tools/bin/$Executable"
     if ((Test-Path -LiteralPath $destination -PathType Leaf) -or
@@ -29,9 +29,20 @@ function Install-MissingTool {
     $archive = "$staging.zip"
     $candidate = "$staging.tmp"
     try {
-        Get-ToolArchive -Url $Url -Destination $archive -Name $Executable
-        if ($Sha256 -and (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $Sha256) {
-            throw "SHA-256 mismatch for $Executable."
+        $failures = foreach ($source in $Url) {
+            try {
+                Get-ToolArchive -Url $source -Destination $archive -Name $Executable
+                if ($Sha256 -and (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash -ne $Sha256) {
+                    throw "SHA-256 mismatch for $Executable."
+                }
+                break
+            } catch {
+                "${source}: $($_.Exception.Message)"
+                if (Test-Path -LiteralPath $archive) { Remove-Item -LiteralPath $archive -Force }
+            }
+        }
+        if (-not (Test-Path -LiteralPath $archive -PathType Leaf)) {
+            throw "Cannot install $Executable. $($failures -join ' | ')"
         }
 
         Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -104,7 +115,12 @@ try {
         $architecture = '386'
         $terraformHash = 'dd530788dff2c132bab59e29c00c81b8d2a9aa4b0c9832addd0777bd07b4b6cf'
     }
-    Install-MissingTool terraform.exe "https://hashicorp-releases.yandexcloud.net/terraform/$terraformVersion/terraform_${terraformVersion}_windows_${architecture}.zip" $terraformHash
+    $terraformArchive = "terraform/$terraformVersion/terraform_${terraformVersion}_windows_${architecture}.zip"
+    $terraformUrls = @(
+        "https://hashicorp-releases.yandexcloud.net/$terraformArchive"
+        "https://releases.hashicorp.com/$terraformArchive"
+    )
+    Install-MissingTool terraform.exe $terraformUrls $terraformHash
     Install-MissingTool yc.exe "https://storage.yandexcloud.net/yandexcloud-yc/release/yc_windows_${architecture}.zip" -LocalOnly
 
     $poetryVersion = '2.4.1'
